@@ -2,6 +2,66 @@
 
 Expose node labels to kubernetes pods
 
+## Building Multi-Architecture Images
+
+This project supports both `amd64` and `arm64` architectures. To build multi-architecture Docker images, use the provided build script with Docker Buildx:
+
+### Prerequisites
+
+- Docker with Buildx support (Docker Desktop includes Buildx by default)
+- For pushing images: Docker Hub or container registry credentials
+
+### Building Locally
+
+Build multi-architecture images for local testing:
+
+```bash
+chmod +x build.sh
+./build.sh
+```
+
+This will build images for both `linux/amd64` and `linux/arm64` platforms.
+
+### Building and Pushing to Registry
+
+To build and push multi-architecture images to a registry:
+
+```bash
+PUSH=true IMAGE_NAME=your-registry/kube-node-labels VERSION=1.2.0 ./build.sh
+```
+
+### Customization
+
+The build script supports the following environment variables:
+
+- `IMAGE_NAME`: Docker image name (default: `scottcrossen/kube-node-labels`)
+- `VERSION`: Image version/tag (default: `latest`)
+- `PLATFORMS`: Comma-separated list of platforms (default: `linux/amd64,linux/arm64`)
+- `PUSH`: Set to `true` to push to registry (default: `false`)
+
+Example with custom platforms:
+
+```bash
+PLATFORMS=linux/amd64,linux/arm64,linux/arm/v7 ./build.sh
+```
+
+### Manual Build with Docker Buildx
+
+You can also use Docker Buildx directly:
+
+```bash
+# Create and use a builder instance
+docker buildx create --name multiarch --use
+docker buildx inspect --bootstrap
+
+# Build and push
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  --tag scottcrossen/kube-node-labels:latest \
+  --push \
+  .
+```
+
 ## Example:
 
 First, apply cluster permissions to access the node labels from a pod with our service account.
