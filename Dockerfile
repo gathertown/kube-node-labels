@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine:3.23
 
 RUN apk --update add \
     openssl \
